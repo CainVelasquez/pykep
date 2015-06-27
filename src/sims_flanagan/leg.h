@@ -1,8 +1,9 @@
 /*****************************************************************************
  *   Copyright (C) 2004-2015 The PyKEP development team,                     *
  *   Advanced Concepts Team (ACT), European Space Agency (ESA)               *
- *   http://keptoolbox.sourceforge.net/index.html                            *
- *   http://keptoolbox.sourceforge.net/credits.html                          *
+ *                                                                           *
+ *   https://gitter.im/esa/pykep                                             *
+ *   https://github.com/esa/pykep                                            *
  *                                                                           *
  *   act@esa.int                                                             *
  *                                                                           *
@@ -85,7 +86,7 @@ public:
 	*
 	* \param[in] epoch_i Inital epoch
 	* \param[in] state_i Initial sc_state (spacecraft state)
-	* \param[in] thrott sequence of doubles (\f$ x_1,y_1,z_1, ..., x_N,y_N,z_N \f$) representing the cartesian components of the throttles
+	* \param[in] throttle sequence of doubles (\f$ x_1,y_1,z_1, ..., x_N,y_N,z_N \f$) representing the cartesian components of the throttles
 	* \param[in] state_f Final sc_state (spacecraft state)
 	* \param[in] sc Spacecraft object
 	* \param[in] mu Primary body gravitational constant

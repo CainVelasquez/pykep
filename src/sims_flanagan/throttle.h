@@ -1,8 +1,9 @@
 /*****************************************************************************
  *   Copyright (C) 2004-2015 The PyKEP development team,                     *
  *   Advanced Concepts Team (ACT), European Space Agency (ESA)               *
- *   http://keptoolbox.sourceforge.net/index.html                            *
- *   http://keptoolbox.sourceforge.net/credits.html                          *
+ *                                                                           *
+ *   https://gitter.im/esa/pykep                                             *
+ *   https://github.com/esa/pykep                                            *
  *                                                                           *
  *   act@esa.int                                                             *
  *                                                                           *
@@ -81,7 +82,6 @@ public:
 		return s.str();
 	}
 private:
-// Serialization code
 	friend class boost::serialization::access;
 	template <class Archive>
 	void serialize(Archive &ar, const unsigned int)
@@ -90,7 +90,7 @@ private:
 		ar & m_end;
 		ar & m_value;
 	}
-// Serialization code (END)
+
 	epoch m_start;
 	epoch m_end;
 	array3D m_value;

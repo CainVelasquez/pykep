@@ -1,8 +1,9 @@
 /*****************************************************************************
  *   Copyright (C) 2004-2015 The PyKEP development team,                     *
  *   Advanced Concepts Team (ACT), European Space Agency (ESA)               *
- *   http://keptoolbox.sourceforge.net/index.html                            *
- *   http://keptoolbox.sourceforge.net/credits.html                          *
+ *                                                                           *
+ *   https://gitter.im/esa/pykep                                             *
+ *   https://github.com/esa/pykep                                            *
  *                                                                           *
  *   act@esa.int                                                             *
  *                                                                           *
@@ -26,7 +27,7 @@
 #ifndef KEP_TOOLBOX_X2TOF_H
 #define KEP_TOOLBOX_X2TOF_H
 
-#include<cmath>
+#include <cmath>
 
 #include <boost/math/special_functions/acosh.hpp>
 #include <boost/math/special_functions/asinh.hpp>

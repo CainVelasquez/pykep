@@ -178,7 +178,12 @@ BOOST_PYTHON_MODULE(_planet) {
 			"Example::\n\n"
 			"  el = earth.orbital_elements"
 		)
-		.add_property("ref_mjd2000", &planet::keplerian::get_ref_epoch, &planet::keplerian::set_ref_epoch,
+		.add_property("ref_epoch", &planet::keplerian::get_ref_epoch, &planet::keplerian::set_ref_epoch,
+			"The reference epoch at which the elements are given\n\n"
+			"Example::\n\n"
+			"  el = earth.ref_epoch"
+		)
+		.add_property("ref_mjd2000", &planet::keplerian::get_ref_mjd2000, &planet::keplerian::set_ref_mjd2000,
 			"The reference epoch at which the elements are given\n\n"
 			"Example::\n\n"
 			"  el = earth.ref_mjd2000"
@@ -193,7 +198,7 @@ BOOST_PYTHON_MODULE(_planet) {
 		));
 
 		planet_wrapper<planet::tle>("tle","An Earth satellite defined from the TLE format, derives from :py:class:`PyKEP.planet._base`")
-		.def(init<optional<const std::string &> >(
+                  .def(init<optional<const std::string &, const std::string> >(
 			"PyKEP.planet.tle(line1, line2)\n\n"
 			"- line1: string containing the first line of a TLE (69 well formatted chars)\n"
 			"- line2: string containing the second line of a TLE (69 well formatted chars)\n\n"
