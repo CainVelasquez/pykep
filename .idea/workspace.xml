@@ -21,25 +21,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="65d29667-bfc5-4457-aab4-89af638203f6" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/exposin/jenkins_traub.h" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/PyKEP/examples/_ex1.py" afterPath="$PROJECT_DIR$/PyKEP/examples/_ex1.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/planet/base.cpp" afterPath="$PROJECT_DIR$/src/planet/base.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/planet/base.h" afterPath="$PROJECT_DIR$/src/planet/base.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/exposin/class_exposin.h" afterPath="$PROJECT_DIR$/src/exposin/class_exposin.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/PyKEP/core/core.cpp" afterPath="$PROJECT_DIR$/PyKEP/core/core.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/exposin/dT_quadrature.h" afterPath="$PROJECT_DIR$/src/exposin/dT_quadrature.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/exposin/exposin.h" afterPath="$PROJECT_DIR$/src/exposin/exposin.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/planet/gtoc5.cpp" afterPath="$PROJECT_DIR$/src/planet/gtoc5.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/planet/gtoc7.cpp" afterPath="$PROJECT_DIR$/src/planet/gtoc7.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/core_functions/jorba.c" afterPath="$PROJECT_DIR$/src/core_functions/jorba.c" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/planet/keplerian.cpp" afterPath="$PROJECT_DIR$/src/planet/keplerian.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/keplerian_toolbox.h" afterPath="$PROJECT_DIR$/src/keplerian_toolbox.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/exposin/lagrangian_interpolation.h" afterPath="$PROJECT_DIR$/src/exposin/lagrangian_interpolation.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/exposin/lambert_exposin.h" afterPath="$PROJECT_DIR$/src/exposin/lambert_exposin.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.cpp" afterPath="$PROJECT_DIR$/main.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/planet/mpcorb.cpp" afterPath="$PROJECT_DIR$/src/planet/mpcorb.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cmake_scripts/set_compiler_flags.cmake" afterPath="$PROJECT_DIR$/cmake_scripts/set_compiler_flags.cmake" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/exposin/vectors.h" afterPath="$PROJECT_DIR$/src/exposin/vectors.h" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="pykep.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -111,15 +94,25 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="exposin.h" pinned="false" current-in-tab="true">
+      <file leaf-file-name="exposin.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/exposin/exposin.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.4539545">
+            <state vertical-scroll-proportion="0.0">
               <caret line="132" column="44" selection-start-line="132" selection-start-column="44" selection-end-line="132" selection-end-column="44" />
               <folding>
                 <element signature="e#1959#1975#0" expanded="true" />
                 <element signature="e#7450#7465#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.156013">
+              <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -141,6 +134,7 @@
         <option value="$PROJECT_DIR$/src/exposin/lambert_exposin.h" />
         <option value="$PROJECT_DIR$/PyKEP/core/core.cpp" />
         <option value="$PROJECT_DIR$/src/exposin/exposin.h" />
+        <option value="$PROJECT_DIR$/.gitignore" />
       </list>
     </option>
   </component>
@@ -211,70 +205,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="pykep" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pykep" />
-              <option name="myItemType" value="com.jetbrains.cidr.projectView.CidrFilesViewHelper$1$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pykep" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pykep" />
-              <option name="myItemType" value="com.jetbrains.cidr.projectView.CidrFilesViewHelper$1$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pykep" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="exposin" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pykep" />
-              <option name="myItemType" value="com.jetbrains.cidr.projectView.CidrFilesViewHelper$1$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pykep" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="PyKEP" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pykep" />
-              <option name="myItemType" value="com.jetbrains.cidr.projectView.CidrFilesViewHelper$1$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pykep" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="PyKEP" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="examples" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -854,12 +784,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/exposin/exposin.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.4539545">
+        <state vertical-scroll-proportion="0.0">
           <caret line="132" column="44" selection-start-line="132" selection-start-column="44" selection-end-line="132" selection-end-column="44" />
           <folding>
             <element signature="e#1959#1975#0" expanded="true" />
             <element signature="e#7450#7465#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.156013">
+          <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
