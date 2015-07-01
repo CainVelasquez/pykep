@@ -14,7 +14,7 @@ try:
         contains [t0,T,mf,Vx,Vy,Vz,[throttles]] in the following units: [mjd2000, days, kg, m/s,m/s,m/s, [non-dimensional]]
         """
 
-        def __init__(self, mass=1000, Tmax=0.05, Isp=2500, Vinf=3.0, nseg=20):
+        def __init__(self, mass=1000, Tmax=0.05, Isp=2500, Vinf=0.0, nseg=20):
             # First we call the constructor for the base PyGMO problem
             # (dim, integer dim, number of obj, number of con, number of inequality con, tolerance on con violation)
             super(mga_lt_earth_mars, self).__init__(
@@ -49,10 +49,14 @@ try:
             end = epoch(x[0] + x[1])
 
             r, v = self.__earth.eph(start)
+            r = [149.0e9, 0, 0]
+            v = [0, 29.0e3, 0]
             v = [a + b for a, b in zip(v, x[3:6])]
             x0 = sc_state(r, v, self.__sc.mass)
 
             r, v = self.__mars.eph(end)
+            r = [-149.0e9, 0, 0]
+            v = [0, -29.0e3, 0]
             xe = sc_state(r, v, x[2])
 
             self.__leg.set(start, x0, x[-3 * self.__nseg:], end, xe)
@@ -95,24 +99,24 @@ try:
             # The Sun
             axis.scatter([0], [0], [0], color='y')
             # The leg
-            plot_sf_leg(self.__leg, units=AU, N=10, ax=axis)
+            plot_sf_leg(self.__leg, units=AU, N=30, ax=axis)
             # The planets
-            plot_planet(
-                self.__earth, start, units=AU, legend=True, color=(0.8, 0.8, 1), ax = axis)
-            plot_planet(
-                self.__mars, end, units=AU, legend=True, color=(0.8, 0.8, 1), ax = axis)
+            #plot_planet(
+            #    self.__earth, start, units=AU, legend=True, color=(0.8, 0.8, 1), ax = axis)
+            #plot_planet(
+            #    self.__mars, end, units=AU, legend=True, color=(0.8, 0.8, 1), ax = axis)
             plt.show()
 
     def run_example1(n_restarts=5):
         from PyGMO import algorithm, island
-        prob = mga_lt_earth_mars(nseg=15)
+        prob = mga_lt_earth_mars(nseg=5)
         prob.high_fidelity(True)
         algo = algorithm.scipy_slsqp(max_iter=500, acc=1e-5)
         # algo = algorithm.snopt(major_iter=1000, opt_tol=1e-6, feas_tol=1e-11)
         algo2 = algorithm.mbh(algo, n_restarts, 0.05)
         algo2.screen_output = True
         isl = island(algo2, prob, 1)
-        print("Running Monotonic Basin Hopping .... this will take a while.")
+        print("Monotonic Basin Hopping .... this will take a while.")
         isl.evolve(1)
         isl.join()
         print("Is the solution found a feasible trajectory? " +

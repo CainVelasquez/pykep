@@ -44,7 +44,7 @@ typedef boost::shared_ptr<base> planet_ptr;
 
 /// Base class for planet
 /**
- * A base planet in PyKEP is defined by its name, its radius, its safe radius (i.e. how close to it its considered to be safe)
+ * A base planet in PyKEP is defined by its name, its radius, its safe r_m (i.e. how close to it its considered to be safe)
  * its gravity parameter and the gravitational parameter of the attracting body. All classes deriving from planet::base
  * will have to implement the planet ephemerides planet::base::eph_impl which is the core method of this class.
  *

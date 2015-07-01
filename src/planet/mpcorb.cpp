@@ -104,7 +104,7 @@ mpcorb::mpcorb(const std::string& line)
 
 	m_year_of_discovery = boost::lexical_cast<unsigned int>(tmp);
 
-	//Now we estimate the asteroid radius, safe_radius and gravity parametes with hyper simplified assumptions
+	//Now we estimate the asteroid r_m, safe_radius and gravity parametes with hyper simplified assumptions
 	double radius = 1329000 * std::pow(10,-m_H * 0.2); // This is assuming an albedo of 0.25 (www.physics.sfasu.edu/astro/asteroids/sizemagnitude.html)
 	double mu_planet = 4./3. * M_PI * std::pow(radius,3) * 2800 * ASTRO_CAVENDISH;
 

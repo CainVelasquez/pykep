@@ -73,7 +73,7 @@ int taylor_step_fixed_thrust(MY_FLOAT *ti,
  *        the user. the parameter ht is used as step, and the parameter
  *        order (see below) is used as the order.
  *     1: standard stepsize control. it uses an approximation to the
- *        optimal order and to the radius of convergence of the series
+ *        optimal order and to the r_m of convergence of the series
  *        to approximate the 'optimal' step size. It tries to keep
  *        either the absolute or the relative errors below the given
  *        values. See the paper for more details.

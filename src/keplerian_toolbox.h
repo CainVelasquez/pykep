@@ -30,6 +30,8 @@
 #include "lambert_problem.h"
 #include "lambert_problemOLD.h"
 
+#include "exposin/lambert_exposin.h"
+
 #include "planet/base.h"
 #include "planet/keplerian.h"
 #include "planet/jpl_low_precision.h"

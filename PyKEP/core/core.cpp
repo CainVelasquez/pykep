@@ -157,6 +157,9 @@ BOOST_PYTHON_MODULE(_core) {
 	doc_options.disable_signatures();
 
 	//Register std converters to python lists if not already registered by some other module
+	PYKEP_REGISTER_CONVERTER(std::vector<kep_toolbox::exposin >, variable_capacity_policy)
+	PYKEP_REGISTER_CONVERTER(array9D, fixed_size_policy)
+
 	PYKEP_REGISTER_CONVERTER(std::vector<double >, variable_capacity_policy)
 	PYKEP_REGISTER_CONVERTER(kep_toolbox::array3D,fixed_size_policy)
 	PYKEP_REGISTER_CONVERTER(kep_toolbox::array6D,fixed_size_policy)
@@ -301,6 +304,17 @@ BOOST_PYTHON_MODULE(_core) {
 		)
 		.def(repr(self))
 		.def_pickle(python_class_pickle_suite<kep_toolbox::lambert_problem>());
+
+	// Exposin Lambert
+	class_<kep_toolbox::lambert_exposin>("lambert_exposin","Desc!", init<optional<const kep_toolbox::array3D &, const kep_toolbox::array3D &, const double &, const double &, const bool &, const int&, const double&>>("Longer desc!"))
+			.def("get_v1",&kep_toolbox::lambert_exposin::get_v1,return_value_policy<copy_const_reference>(),"desc!")
+			.def("get_v2",&kep_toolbox::lambert_exposin::get_v2,return_value_policy<copy_const_reference>(),"desc!")
+			.def("get_exposins",&kep_toolbox::lambert_exposin::get_exposins,return_value_policy<copy_const_reference>(),"desc!")
+			.def(repr(self));
+	class_<kep_toolbox::exposin>("exposin","Desc!",init<optional<const double&, const double&, const double&, const double&>>("Longer desc!"))
+			.def("get_psi",&kep_toolbox::exposin::get_psi,return_value_policy<copy_const_reference>(),"desc!")
+			.def("get_revs",&kep_toolbox::exposin::get_revs,return_value_policy<copy_const_reference>(),"desc!")
+			.def("get_state",&kep_toolbox::exposin::get_state,"desc!");
 
 	// Lambert problem OLD.
 	/*class_<kep_toolbox::lambert_problemOLD>("lambert_problemOLD","Represents a multiple revolution Lambert's problem",

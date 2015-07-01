@@ -1,132 +1,185 @@
+/*****************************************************************************
+ *   Copyright (C) 2004-2015 The PyKEP development team,                     *
+ *   Advanced Concepts Team (ACT), European Space Agency (ESA)               *
+ *                                                                           *
+ *   https://gitter.im/esa/pykep                                             *
+ *   https://github.com/esa/pykep                                            *
+ *                                                                           *
+ *   act@esa.int                                                             *
+ *                                                                           *
+ *   This program is free software; you can redistribute it and/or modify    *
+ *   it under the terms of the GNU General Public License as published by    *
+ *   the Free Software Foundation; either version 2 of the License, or       *
+ *   (at your option) any later version.                                     *
+ *                                                                           *
+ *   This program is distributed in the hope that it will be useful,         *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ *   GNU General Public License for more details.                            *
+ *                                                                           *
+ *   You should have received a copy of the GNU General Public License       *
+ *   along with this program; if not, write to the                           *
+ *   Free Software Foundation, Inc.,                                         *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.               *
+ *****************************************************************************/
+
 #ifndef KEP_TOOLBOX_CLASS_EXPOSIN_H
 #define KEP_TOOLBOX_CLASS_EXPOSIN_H
 
 #include <cmath>
 #include "exposin.h"
 #include "../astro_constants.h"
+#include "../serialization.h"
+#include "../config.h"
 
-namespace kep_toolbox
-{
-  class class_exposin
-  {
-  private:
-    double k2, r1_m, r2_m, psi;
-    int multi_revs;
-  public:
-    class_exposin(){};
-    class_exposin(double k2, double r1_m, double r2_m, double angle, int multi_revs)
-    {
-      this->k2 = k2;
-      this->r1_m = r1_m;
-      this->r2_m = r2_m;
-      this->psi = 2.0 * M_PI * multi_revs + angle;
-      this->multi_revs = multi_revs;
-    };
-    double get_psi() const
-    {
-      return psi;
-    };
-    int tany1_range(double (&min_max_mid)[3]) const
-    {
-      double logr1r2 = log(r1_m / r2_m);
-      double cosk2O = cos(k2 * psi);
-      double delta = 2.0 * (1.0 - cosk2O) / pow(k2, 4.0) - logr1r2*logr1r2;
-      if (delta < 0.0)
-      {
-        return 1;
-      }
-      double tany1min = k2/2.0 * (-logr1r2 / tan(k2*psi/2) - sqrt(delta));
-      double tany1max = k2/2.0 * (-logr1r2 / tan(k2*psi/2) + sqrt(delta));
-      min_max_mid[0] = tany1min;
-      min_max_mid[1] = tany1max;
-      min_max_mid[2] = -k2 / 2.0 * logr1r2 / tan(k2*psi/2);
+#define REGULA_FALSI_ITERS 1000
+#define MAX_TOF_LIMIT 1000 * 365.0 * ASTRO_DAY2SEC
+#define TANY1_HEURISTIC 0.9
 
-      return 0;
-    };
-    int create_exposin(double tany1, exposin &expsn) const
-    {
-      double range[3]{};
-      tany1_range(range);
-      if (tany1 < range[0] || tany1 > range[1])
-      {
-        return 1;
-      }
-      double logr1r2 = log(r1_m / r2_m);
-      double sink2O = sin(k2 * psi);
-      double cosk2O = cos(k2 * psi);
-
-      double k1_sqr = pow((logr1r2 + tany1 / k2 * sink2O)/(1.0 - cosk2O), 2.0) + pow(tany1 / k2, 2.0);
-      double k1_sign = (logr1r2 + tany1 / k2 * sink2O)/(1.0 - cosk2O);
-
-      double k1;
-      if (k1_sign < 0)
-      {
-        k1 = -sqrt(k1_sqr);
-      }
-      else
-      {
-        k1 = sqrt(k1_sqr);
-      }
-      double phi = acos(tany1/k1/k2);
-      double k0 = r1_m/exp(k1*sin(phi));
-      expsn.set(k0, k1, k2, phi);
-      return 0;
-    };
-    int search_tany1(double dT, double mu, double &tany1) const
-    {
-      const double STOP_CRITERION = 10000.0; // seconds
-      double MAX_ITERS = 10000;
-      const double MAX_DT = 1000 * 365.0 * ASTRO_DAY2SEC;
-
-      double range[3];
-      if (tany1_range(range))
-      {
-        return 2;
-      }
-      exposin exps;
-
-      double tany1_a = range[0];
-      double tany1_b = range[1];
-
-      double tany1_c, tof_c;
-
-      do
-      {
-        if(create_exposin(tany1_a, exps))
-        {
-          return 3;
+namespace kep_toolbox {
+    /// Exponential Sinusoid k2-Class
+    /**
+     * Represents the set of exponential sinusoids with a fixed k2 and some geometrical constraints
+     */
+    class class_exposin {
+    private:
+        double k2, r1_m, r2_m, psi, angle;
+        int multi_revs;
+        std::vector<double> tany1range{0.0,0.0};
+        bool valid_range;
+    public:
+        class_exposin(double k2=0, double r1_m=0, double r2_m=0, double angle=0, int multi_revs=0) {
+            this->k2 = k2;
+            this->r1_m = r1_m;
+            this->r2_m = r2_m;
+            this->angle = angle;
+            this->psi = 2.0 * M_PI * multi_revs + angle;
+            this->multi_revs = multi_revs;
         }
-        double tof_a = exps.dT(psi, mu);
 
-        if(create_exposin(tany1_b, exps))
-        {
-          return 4;
+        /// Get total traversed angular distance (radians)
+        double get_psi() const {
+            return psi;
         }
-        double tof_b = exps.dT(psi, mu);
-        tof_b = fmin(tof_b, MAX_DT);
 
-        tany1_c = tany1_b - (tof_b - dT) * (tany1_b - tany1_a) / (tof_b - tof_a);
-        create_exposin(tany1_c, exps);
-        tof_c = exps.dT(psi, mu);
+        double get_angle() const {
+            return angle;
+        }
 
-        if ((tof_a > 0.0 && tof_c > 0.0) || (tof_a < 0.0 && tof_c < 0.0))
-        {
-          tany1_a = tany1_c;
+        /// Set required revolutions about central body between initial and final states
+        void set_revs(int revs) {
+            psi = 2.0 * M_PI * revs + angle;
+            multi_revs = revs;
         }
-        else
-        {
-          tany1_b = tany1_c;
+
+        /// Calculate minimum and maximum permissible tan y1
+        std::vector<double> tany1_range() {
+            double logr1r2 = log(r1_m / r2_m);
+            double cosk2O = cos(k2 * psi);
+            double delta = 2.0 * (1.0 - cosk2O) / pow(k2, 4.0) - logr1r2 * logr1r2;
+            double tany1min = k2 / 2.0 * (-logr1r2 / tan(k2 * psi / 2) - sqrt(delta));
+            double tany1max = k2 / 2.0 * (-logr1r2 / tan(k2 * psi / 2) + sqrt(delta));
+            tany1range[0] = tany1min;
+            tany1range[1] = tany1max;
+            valid_range = delta >= 0.0;
+            return tany1range;
         }
-      }
-      while(fabs(tof_c - dT) > STOP_CRITERION && (--MAX_ITERS));
-      if (MAX_ITERS <= 0)
-      {
-        return 1;
-      }
-      tany1 = tany1_c;
-      return 0;
+
+        /// Check that the range is valid
+        bool tany1_range_valid() {
+            return valid_range;
+        }
+
+        /// Build an exposin instance according to a given tan y1
+        void create_exposin(double tany1, exposin &expsn) const {
+            double logr1r2 = log(r1_m / r2_m);
+            double sink2O = sin(k2 * psi);
+            double cosk2O = cos(k2 * psi);
+
+            double k1_sqr = pow((logr1r2 + tany1 / k2 * sink2O) / (1.0 - cosk2O), 2.0) + pow(tany1 / k2, 2.0);
+            double k1_sign = (logr1r2 + tany1 / k2 * sink2O) / (1.0 - cosk2O);
+
+            double k1;
+            if (k1_sign < 0) {
+                k1 = -sqrt(k1_sqr);
+            }
+            else {
+                k1 = sqrt(k1_sqr);
+            }
+            double phi = acos(tany1 / k1 / k2);
+            double k0 = r1_m / exp(k1 * sin(phi));
+            expsn.set(k0, k1, k2, phi);
+        }
+
+        /// Find the tan y1 that results in a given time of flight.
+        double search_tany1(double dT, double mu, double stop_tol=1.0e4) {
+            tany1_range();
+            double tany1_a = tany1range[0] * TANY1_HEURISTIC; // Boundaries have a few numerical issues, so avoid them
+            double tany1_b = tany1range[1] * TANY1_HEURISTIC;
+            double tany1_c;
+            double tof_a, tof_b, tof_c;
+
+            exposin exps;
+
+            /* F(a) */
+            create_exposin(tany1_a, exps);
+            tof_a = exps.tof(psi, mu);
+
+            /* F(b) */
+            create_exposin(tany1_b, exps);
+            tof_b = exps.tof(psi, mu);
+
+            /* Max TOF can be problematically large, so impose a simple limit */
+            tof_b = fmin(tof_b, MAX_TOF_LIMIT);
+
+            if (dT > tof_b || dT < tof_a) return 1e20; // Opportunistic prune
+
+            double iters = REGULA_FALSI_ITERS;
+            do {
+                /* Find c, then F(c) */
+                tany1_c = tany1_b - (tof_b - dT) * (tany1_b - tany1_a) / (tof_b - tof_a);
+                create_exposin(tany1_c, exps);
+                tof_c = exps.tof(psi, mu);
+
+                /* Revise bounds */
+                if ((tof_a > 0.0 && tof_c > 0.0) || (tof_a < 0.0 && tof_c < 0.0)) {
+                    tany1_a = tany1_c;
+                    tof_a = tof_c;
+                }
+                else {
+                    tany1_b = tany1_c;
+                    tof_b = tof_c;
+                }
+            }
+            while (fabs(tof_c - dT) > stop_tol && (--iters));
+            if (iters == 0) return 1e20;
+            return tany1_c;
+        }
+
+        /// Build an exposin instance from a given tof. Returns false at failure, true otherwise.
+        bool tof_to_exposin(exposin &exps, double tof, double mu, double stop_tol=1.0e4){
+            tany1_range();
+            if (!tany1_range_valid()) return false;
+            double this_tany1 = search_tany1(tof, mu, stop_tol);
+            if (this_tany1 > tany1range[1] || this_tany1 < tany1range[0]) return false;
+            create_exposin(this_tany1, exps);
+            return true;
+        }
+    private:
+        friend class boost::serialization::access;
+        template <class Archive>
+        void serialize(Archive &ar, const unsigned int)
+        {
+            ar & k2;
+            ar & r1_m;
+            ar & r2_m;
+            ar & psi;
+            ar & angle;
+            ar & multi_revs;
+            ar & tany1range;
+            ar & valid_range;
+        }
     };
-  };
 }
 
 #endif

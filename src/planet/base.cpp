@@ -37,7 +37,7 @@ namespace kep_toolbox{ namespace planet {
 /** \param[in] mu_central_body gravitational parameter of the central attracting body [m^3/sec^2]
  * \param[in] mu_self gravitational parameter of the body [m^3/sec^2]
  * \param[in] radius body radius [m]
- * \param[in] safe_radius body safe radius [m]
+ * \param[in] safe_radius body safe r_m [m]
  * \param[in] name body name
 */
 base::base(
@@ -49,7 +49,7 @@ base::base(
 	: m_mu_central_body(mu_central_body), m_mu_self(mu_self), m_radius(radius), m_safe_radius(safe_radius), m_name(name)
 {
 	if (radius < 0) {
-		throw_value_error("The planet radius needs to be positive");
+		throw_value_error("The planet r_m needs to be positive");
 	}
 	if (mu_central_body < 0) {
 		throw_value_error("The central body gravitational parameter needs to be positive");
@@ -58,7 +58,7 @@ base::base(
 		throw_value_error("The gravitational parameter of the planet needs to be positive");
 	}
 	if (radius > safe_radius) {
-		throw_value_error("Safe radius must be larger than radius");
+		throw_value_error("Safe radius must be larger than r_m");
 	}
 }
 
@@ -125,17 +125,17 @@ double base::get_mu_central_body() const {return m_mu_central_body;};
  */
 double base::get_mu_self() const {return m_mu_self;};
 
-/// Getter for the planet radius
+/// Getter for the planet r_m
 /**
- * Gets the radius of the planet
+ * Gets the r_m of the planet
  *
  * @return const reference to radius (SI Units)
  */
 double base::get_radius() const {return m_radius;};
 
-/// Getter for the planet safe-radius
+/// Getter for the planet safe-r_m
 /**
- * Gets the safe-radius of the planet. This is intended to be the minimum distance
+ * Gets the safe-r_m of the planet. This is intended to be the minimum distance
  * from the planet center that is safe ... It may be used, for example,  during fly-bys as a constarint
  * on the spacecraft trajectory
  *
@@ -146,18 +146,18 @@ double base::get_safe_radius() const {return m_safe_radius;};
 /// Returns the planet name
 std::string base::get_name() const {return m_name;};
 
-/// Setter for the planet safe-radius
+/// Setter for the planet safe-r_m
 /**
  * Sets the safe-radius of the planet. This is intended to be the minimum distance
  * from the planet center that is safe ... It is used, for example,  during fly-bys as a constarint
  * on the spacecraft trajectory
  *
- * \param[in] safe_radius Minimum allowed planetary distance (in planetary radius units)
+ * \param[in] safe_radius Minimum allowed planetary distance (in planetary r_m units)
  * \throws value_error if safe_radius in < 1
  */
 void base::set_safe_radius(double sr) {
 	if (sr < 1) {
-		throw_value_error("Trying to set a safe_radius that is smaller than the planetary radius");
+		throw_value_error("Trying to set a safe_radius that is smaller than the planetary r_m");
 	}
 	m_safe_radius = sr * get_radius();
 };
@@ -190,11 +190,11 @@ void base::set_mu_self(double mu) {
 	m_mu_self = mu;
 }
 
-/// Setter for the planet radius
+/// Setter for the planet r_m
 /**
  * Sets the planet radius
  *
- * \param[in] radius planet radius [m]
+ * \param[in] r_m planet radius [m]
  * \throws value_error if radius is < 0
  */
 void base::set_radius(double radius) { 
@@ -221,8 +221,8 @@ std::string base::human_readable() const {
 	s << "Planet Name: " << m_name << std::endl;
 	s << "Own gravity parameter: " << boost::lexical_cast<std::string>(m_mu_self) << std::endl;
 	s << "Central body gravity parameter: " << boost::lexical_cast<std::string>(m_mu_central_body) << std::endl;
-	s << "Planet radius: " << boost::lexical_cast<std::string>(m_radius) << std::endl;
-	s << "Planet safe radius: " << boost::lexical_cast<std::string>(m_safe_radius) << std::endl;
+	s << "Planet r_m: " << boost::lexical_cast<std::string>(m_radius) << std::endl;
+	s << "Planet safe r_m: " << boost::lexical_cast<std::string>(m_safe_radius) << std::endl;
 	s << human_readable_extra();
 	return s.str();
 }
