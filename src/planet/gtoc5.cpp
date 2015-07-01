@@ -7128,8 +7128,8 @@ gtoc5::gtoc5(int astid_)
 	
 	set_mu_central_body(ASTRO_MU_SUN);
 	set_mu_self(0); 	// the body gravitational parameter, undefined
-	set_radius(0);		// the body r_m, undefined
-	set_safe_radius(1);	// the body safe r_m, undefined
+	set_radius(0);		// the body radius, undefined
+	set_safe_radius(1);	// the body safe radius, undefined
 	set_name(std::string("GTOC5 asteroid id: ") + boost::lexical_cast<std::string>(astid_));
 	set_elements(elem);
 	set_ref_epoch(epoch(gtoc5_asteroids_data[astid][0],epoch::MJD));

@@ -46,7 +46,7 @@ const array6D keplerian::default_elements = {{1.0,0.1,0.1,0.1,0.1,0.1}};
 * \param[in] mu_central_body The gravitational parameter of the attracting body (SI units)
 * \param[in] mu_self The gravitational parameter of the planet (SI units)
 * \param[in] radius radius of the planet (SI units)
-* \param[in] safe_radius mimimual r_m that is safe during a fly-by of the planet (SI units)
+* \param[in] safe_radius mimimual radius that is safe during a fly-by of the planet (SI units)
 * \param[in] name C++ string containing the planet name. Default value is "Unknown"
 */
 keplerian::keplerian(
@@ -78,7 +78,7 @@ keplerian::keplerian(
 * \param[in] mu_central_body The gravitational parameter of the attracting body (SI units)
 * \param[in] mu_self The gravitational parameter of the planet (SI units)
 * \param[in] radius radius of the planet (SI units)
-* \param[in] safe_radius mimimual r_m that is safe during a fly-by of the planet (SI units)
+* \param[in] safe_radius mimimual radius that is safe during a fly-by of the planet (SI units)
 * \param[in] name C++ string containing the planet name. Default value is "Unknown"
 */
 

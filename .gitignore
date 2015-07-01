@@ -5,4 +5,4 @@ CMakeLists.txt.user
 doc/sphinx/_build
 CMakeCache.txt
 CMakeFiles/
-*idea/
+.idea/
