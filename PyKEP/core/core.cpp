@@ -306,15 +306,40 @@ BOOST_PYTHON_MODULE(_core) {
 		.def_pickle(python_class_pickle_suite<kep_toolbox::lambert_problem>());
 
 	// Exposin Lambert
-	class_<kep_toolbox::lambert_exposin>("lambert_exposin","Desc!", init<optional<const kep_toolbox::array3D &, const kep_toolbox::array3D &, const double &, const double &, const bool &, const int&, const double&>>("Longer desc!"))
-			.def("get_v1",&kep_toolbox::lambert_exposin::get_v1,return_value_policy<copy_const_reference>(),"desc!")
-			.def("get_v2",&kep_toolbox::lambert_exposin::get_v2,return_value_policy<copy_const_reference>(),"desc!")
-			.def("get_exposins",&kep_toolbox::lambert_exposin::get_exposins,return_value_policy<copy_const_reference>(),"desc!")
-			.def(repr(self));
-	class_<kep_toolbox::exposin>("exposin","Desc!",init<optional<const double&, const double&, const double&, const double&>>("Longer desc!"))
-			.def("get_psi",&kep_toolbox::exposin::get_psi,return_value_policy<copy_const_reference>(),"desc!")
-			.def("get_revs",&kep_toolbox::exposin::get_revs,return_value_policy<copy_const_reference>(),"desc!")
-			.def("get_state",&kep_toolbox::exposin::get_state,"desc!");
+	class_<kep_toolbox::lambert_exposin>("lambert_exposin","Represents Lambert's problem for exponential sinusoids",
+			init<optional<const kep_toolbox::array3D &, const kep_toolbox::array3D &, const double &, const double &, const bool &, const int&, const double&>>(
+			    "lambert_exposin(r1, r2, tof, mu, lw[, multi_revs, k2])"
+				"- r1: 3D starting position"
+				"- r2: 3D ending position"
+				"- tof: time of flight"
+				"- mu: gravitational parameter"
+				"- lw: True for retrograde motion"
+				"- multirevs: number of revolutions for a sinusoid to make (default -1 finds multiple valid exposins)"
+				"- k2: winding parameter for the exponential sinusoids considered in the solution"
+			))
+			.def("get_v1",&kep_toolbox::lambert_exposin::get_v1,return_value_policy<copy_const_reference>(),"get_v1()")
+			.def("get_v2",&kep_toolbox::lambert_exposin::get_v2,return_value_policy<copy_const_reference>(),"get_v2()")
+			.def("get_r1",&kep_toolbox::lambert_exposin::get_r1,return_value_policy<copy_const_reference>(),"get_r1()")
+			.def("get_r2",&kep_toolbox::lambert_exposin::get_r2,return_value_policy<copy_const_reference>(),"get_r2()")
+			.def("get_tof",&kep_toolbox::lambert_exposin::get_tof,return_value_policy<copy_const_reference>(),"get_tof()")
+			.def("get_mu",&kep_toolbox::lambert_exposin::get_mu,return_value_policy<copy_const_reference>(),"get_mu()")
+			.def("get_revs",&kep_toolbox::lambert_exposin::get_revs,return_value_policy<copy_const_reference>(),"get_revs()")
+			.def("get_exposins",&kep_toolbox::lambert_exposin::get_exposins,return_value_policy<copy_const_reference>(),"get_exposins()")
+			.def(repr(self))
+			.def_pickle(python_class_pickle_suite<kep_toolbox::lambert_problem>());
+	// Exposin
+	class_<kep_toolbox::exposin>("exposin","Represents an exponential sinusoid curve in 3D space",
+			init<optional<const double&, const double&, const double&, const double&>>(
+					"exposin(k0, k1, k2, phi)"
+					"- k0: shape parameter"
+					"- k1: shape parameter"
+					"- k2: shape parameter"
+					"- phi: shape parameter"
+			))
+			//.def("",&kep_toolbox::exposin::,return_value_policy<copy_const_reference>(),"")
+			.def("get_psi",&kep_toolbox::exposin::get_psi,return_value_policy<copy_const_reference>(),"get_psi()")
+			.def("get_revs",&kep_toolbox::exposin::get_revs,return_value_policy<copy_const_reference>(),"get_revs()")
+			.def("get_state",&kep_toolbox::exposin::get_state,"get_state(theta, mu)");
 
 	// Lambert problem OLD.
 	/*class_<kep_toolbox::lambert_problemOLD>("lambert_problemOLD","Represents a multiple revolution Lambert's problem",

@@ -31,7 +31,7 @@
 #include "../serialization.h"
 #include "../config.h"
 
-typedef boost::array<double,9> array9D;
+typedef boost::array<double, 9> array9D;
 
 namespace kep_toolbox {
     /// Exponential Sinusoid Trajectory Model
@@ -40,20 +40,23 @@ namespace kep_toolbox {
      *
      * @author Chris Andre (chrisandre01 _AT_ gmail.com)
      */
-    class exposin {
+    class __KEP_TOOL_VISIBLE exposin {
     private:
+        /// Shape parameters of exponential sinusoid
         double k0, k1, k2, phi;
+
+        /// Geometry for 3D interpretation as a trajectory
         array3D r1, r2;
         double angle, psi;
         bool lw;
         int revs;
     public:
 
-        exposin(const double k0=0, const double k1=0, const double k2=0, const double phi=0) {
+        exposin(const double &k0 = 0, const double &k1 = 0, const double &k2 = 0, const double &phi = 0) {
             set(k0, k1, k2, phi);
         }
 
-        void set(const double k0, const double k1, const double k2, const double phi) {
+        void set(const double &k0, const double &k1, const double &k2, const double &phi) {
             this->k0 = k0;
             this->k1 = k1;
             this->k2 = k2;
@@ -61,7 +64,8 @@ namespace kep_toolbox {
         }
 
         /// Extra data for 3D projection
-        void projection(const array3D &r1, const array3D &r2, const double angle, const bool lw, const double psi, const int revs) {
+        void projection(const array3D &r1, const array3D &r2, const double &angle, const bool &lw, const double &psi,
+                        const int &revs) {
             this->r1 = r1;
             this->r2 = r2;
             this->angle = angle;
@@ -71,45 +75,45 @@ namespace kep_toolbox {
         }
 
         /// Calculate tangent of flight path angle
-        double tany(const double theta) const {
+        double tany(const double &theta) const {
             return k1 * k2 * cos(k2 * theta + phi);
         }
 
         /// Calculate radial distance magnitude
-        double r_m(const double theta) const {
+        double r_m(const double &theta) const {
             return k0 * exp(k1 * sin(k2 * theta + phi));
         }
 
         /// Calculate rate of change of radial distance magnitude w.r.t. time
-        double r_m_dot(const double theta, const double mu) const {
+        double r_m_dot(const double &theta, const double &mu) const {
             return r_m(theta) * k1 * cos(k2 * theta + phi) * k2 * theta_dot(theta, mu);
         }
 
         /// Calculate rate of change of theta w.r.t. time
-        double theta_dot(const double theta, const double mu) const {
+        double theta_dot(const double &theta, const double &mu) const {
             return sqrt(
                     mu / pow(r_m(theta), 3.0) / (pow(tany(theta), 2.0) + k1 * k2 * k2 * sin(k2 * theta + phi) + 1));
         }
 
         /// Calculate time of flight from theta=0 to theta=psi
-        double tof(const double psi, const double mu, const int abscissas = 10) const {
+        double tof(const double &psi, const double &mu, const int &abscissas = 10) const {
             double d_theta = psi / abscissas;
             double integral = 0.0;
             for (int i = 0; i < abscissas; i++) {
-                integral += 1.0 / theta_dot(d_theta * i + d_theta / 2.0, mu) * d_theta;
+                integral += d_theta / theta_dot(d_theta * i + d_theta / 2.0, mu);
             }
             return integral;
         }
 
         /// Calculate magnitude of velocity
-        double v_m(const double theta, const double mu) const {
+        double v_m(const double &theta, const double &mu) const {
             double tangential = theta_dot(theta, mu) * r_m(theta);
             double radial = r_m_dot(theta, mu);
             return sqrt(tangential * tangential + radial * radial);
         }
 
         /// Calculate local (non-dimensional) acceleration magnitude
-        double local_a_m(const double theta) const {
+        double local_a_m(const double &theta) const {
             double tan_y = tany(theta);
             double s = sin(k2 * theta + phi);
             double cosy = 1.0 / sqrt(1.0 + tan_y * tan_y);
@@ -119,12 +123,12 @@ namespace kep_toolbox {
         }
 
         /// Calculate dimensional acceleration magnitude
-        double a_m(const double theta, const double mu) const {
+        double a_m(const double &theta, const double &mu) const {
             return mu / pow(r_m(theta), 2.0) * local_a_m(theta);
         }
 
         /// Calculate position vector
-        void r_vec(array3D &out, const double theta) const {
+        void r_vec(array3D &out, const double &theta) const {
             double yp = r_m(theta) * sin(theta);
             double xp = r_m(theta) * cos(theta);
             array3D normal;
@@ -136,7 +140,7 @@ namespace kep_toolbox {
         }
 
         /// Calculate velocity vector
-        void v_vec(array3D &out, const double theta, const double mu) const {
+        void v_vec(array3D &out, const double &theta, const double &mu) const {
             double yp = r_m_dot(theta, mu) * sin(theta) + r_m(theta) * cos(theta) * theta_dot(theta, mu);
             double xp = r_m_dot(theta, mu) * cos(theta) - r_m(theta) * sin(theta) * theta_dot(theta, mu);
             array3D normal;
@@ -148,7 +152,7 @@ namespace kep_toolbox {
         }
 
         /// Calculate required acceleration vector (no central body attraction)
-        void a_vec(array3D &out, const double theta, const double mu) const {
+        void a_vec(array3D &out, const double &theta, const double &mu) const {
             v_vec(out, theta, mu);
             vers(out, out);
             scale(out, out, a_m(theta, mu));
@@ -171,29 +175,37 @@ namespace kep_toolbox {
             return out;
         }
 
-        const double& get_psi() const {
+        const double &get_psi() const {
             return psi;
         }
 
-        const int& get_revs() const {
+        const int &get_revs() const {
             return revs;
         }
 
+        const double &get_traversal_final_mass(const double &isp, const double &m) const;
+
+        const double &get_max_thrust(const double &isp, const double &m) const;
+
+        /*
+         * Helper methods and misc.
+         */
+
     private:
         friend class boost::serialization::access;
-        template <class Archive>
-        void serialize(Archive &ar, const unsigned int)
-        {
-            ar & k0;
-            ar & k1;
-            ar & k2;
-            ar & phi;
-            ar & r1;
-            ar & r2;
-            ar & angle;
-            ar & lw;
-            ar & psi;
-            ar & revs;
+
+        template<class Archive>
+        void serialize(Archive &ar, const unsigned int) {
+            ar &k0;
+            ar &k1;
+            ar &k2;
+            ar &phi;
+            ar &r1;
+            ar &r2;
+            ar &angle;
+            ar &lw;
+            ar &psi;
+            ar &revs;
         }
     };
 }

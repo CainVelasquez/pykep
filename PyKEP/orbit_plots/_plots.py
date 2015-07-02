@@ -480,3 +480,75 @@ def plot_sf_leg(leg, N=5, units=1, color='b', legend=False, plot_line=True, plot
     if ax is None:  # show only if axis is not set
         plt.show()
     return axis
+
+def plot_lambert_exposin(lp, ax=None, sol=0, color='b', legend=False):
+    """
+    ax = plot_lambert_exposin(lp, ax=None, sol=0, color='b', legend=False)
+
+    - lp: PyKEP.lambert_exposin object
+    - ax: 3D axis object (new instance returned if input is None)
+    - sol: solution id
+    - color: matplotlib color to use
+    - legend: plot legend with info
+
+    Plots a particular solution to Lambert's problem for an exponential sinusoid
+
+    Example::
+
+    import PyKEP as pk
+    import matplotlib as mpl
+    from mpl_toolkits.mplot3d import Axes3D
+    import matplotlib.pyplot as plt
+
+    r1 = [149.0e9, 0.0, 0.0]
+    r2 = [200.0e9, -100.0e9, 0.0]
+    mu = 1.32e20
+    tof = 86400 * 565.0
+    lw = True
+
+    prob = pk.lambert_exposin(r1,r2,tof,mu,lw)
+
+    fig = plt.figure()
+    axis = fig.gca(projection='3d')
+
+    axis.scatter([0],[0],[0],color='y')
+    axis.scatter([r1[0]],[r1[1]],[r1[2]],color='b')
+    axis.scatter([r2[0]],[r2[1]],[r2[2]],color='b')
+
+    pk.orbit_plots.plot_lambert_exposin(prob,axis)
+
+    plt.show()
+    """
+    import matplotlib as mpl
+    from mpl_toolkits.mplot3d import Axes3D
+    import matplotlib.pyplot as plt
+
+    if ax is None:
+        fig = plt.figure()
+        axis = fig.gca(projection='3d')
+    else:
+        axis = ax
+
+    exposin = lp.get_exposins()[sol]
+
+    segments = 30 * (exposin.get_revs() + 1)
+    dtheta = exposin.get_psi() / segments
+
+    x = []
+    y = []
+    z = []
+    for i in range(segments+1):
+        stt = exposin.get_state(dtheta*i,lp.get_mu())
+        x.append(stt[0])
+        y.append(stt[1])
+        z.append(stt[2])
+
+    axis.plot(x,y,z,color)
+
+    if ax is None:
+        plt.show()
+
+    if legend:
+        axis.legend()
+
+    return axis

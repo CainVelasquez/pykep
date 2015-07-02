@@ -43,20 +43,31 @@ namespace kep_toolbox {
     * solution to the optimal control problem.
     *
     * See http://www.esa.int/gsp/ACT/doc/MAD/pub/ACT-TNT-MAD-LMSP01.pdf
+    * See http://www.esa.int/gsp/ACT/doc/ARI/ARI%20Study%20Report/ACT-RPT-MAD-ARI-05-4106-Spiral%20Trajectories%20in%20Global%20Optimisation.pdf
     *
     * @author Chris Andre (chrisandre01 _AT_ gmail.com)
     */
     class __KEP_TOOL_VISIBLE lambert_exposin {
     private:
+        /// Represents class of exposins for given problem geometry in addition to a given k2
         class_exposin k2_class;
+
+        /// Solution trajectories
         std::vector<exposin> solv_exposins{};
-        array3D r1, r2;
+
+        // Solution boundary velocities
         std::vector<array3D> v1{}, v2{};
+
+        array3D r1, r2;
+
+        // Maximum number of revolutions considered
         int multi_revs;
+
         bool lw;
         double tof, mu, k2;
     public:
-        lambert_exposin(const array3D &r1={0,0,0}, const array3D &r2={0,0,0}, const double &tof=0, const double &mu=0, const bool &lw=0,
+        lambert_exposin(const array3D &r1 = {1, 0, 0}, const array3D &r2 = {0, 1, 0}, const double &tof = 1,
+                        const double &mu = 1, const bool &lw = false,
                         const int &multi_revs = -1, const double &k2 = 0.1) {
             this->r1 = r1;
             this->r2 = r2;
@@ -72,62 +83,66 @@ namespace kep_toolbox {
             if (lw) {
                 angle = 2.0 * M_PI - angle;
             }
+
             k2_class = class_exposin(k2, r1_m, r2_m, angle, multi_revs);
 
             if (multi_revs == -1) { // Detect maximum revolutions
-                for (int n = 0; true; n++) {
+                bool found_one = false;
+                int max_revs = get_max_revs_heuristic();
+                for (int n = 0; n < max_revs || found_one; n++) {
                     if (build_a_solution(n)) {
                         this->multi_revs = n;
+                        found_one = true;
                     }
-                    else break;
+                    else if (found_one) break; // stop search when solutions stop appearing
                 }
             }
             else { // Force the specified revolution number
-                if (!build_a_solution(this->multi_revs)) this->multi_revs = -1; // signal no solutions
+                if (!build_a_solution(multi_revs)) this->multi_revs = -1; // signal no solutions
             }
         }
 
-        const std::vector<array3D>& get_v1() const {
+        const std::vector<array3D> &get_v1() const {
             return v1;
         }
 
-        const std::vector<array3D>& get_v2() const {
+        const std::vector<array3D> &get_v2() const {
             return v2;
         }
 
-        const array3D& get_r1() const {
+        const array3D &get_r1() const {
             return r1;
         }
 
-        const array3D& get_r2() const {
+        const array3D &get_r2() const {
             return r2;
         }
 
-        const double& get_tof() const {
+        const double &get_tof() const {
             return tof;
         }
 
-        const double& get_mu() const {
+        const double &get_mu() const {
             return mu;
         }
 
-        const int& get_revs() const {
+        const int &get_revs() const {
             return multi_revs;
         }
 
-        const std::vector<exposin>& get_exposins() const {
+        const std::vector<exposin> &get_exposins() const {
             return solv_exposins;
         }
 
-        const double& get_traversal_final_mass(const double isp, const double m) const;
-
-        const double& get_max_thrust(const double isp, const double m) const;
-
+        /*
+         * Helper methods and misc.
+         */
     private:
+        /// Helper function to fully construct and save a solution for a given revolution; returns false if none found.
         bool build_a_solution(const int revs) {
             k2_class.set_revs(revs);
             exposin exps;
-            if (!k2_class.tof_to_exposin(exps, tof, mu, 10*86400.0)) {
+            if (!k2_class.tof_to_exposin(exps, tof, mu, 10 * 86400.0)) {
                 return false;
             }
             array3D a, b;
@@ -143,33 +158,43 @@ namespace kep_toolbox {
             return true;
         }
 
-        friend class boost::serialization::access;
-        template <class Archive>
-        void serialize(Archive &ar, const unsigned int)
-        {
-            ar & r1;
-            ar & r2;
-            ar & tof;
-            ar & mu;
-            ar & v1;
-            ar & v2;
-            ar & multi_revs;
-            ar & lw;
-            ar & k2;
-            ar & k2_class;
-            ar & solv_exposins;
+        /// Helper function to approximate the maximum revolutions possible for a given transfer problem.
+        int get_max_revs_heuristic() const {
+            double period1 = 2.0 * M_PI * sqrt(pow(norm(r1), 3.0) / mu); // circular orbit period
+            double period2 = 2.0 * M_PI * sqrt(pow(norm(r2), 3.0) / mu);
+            return ceil(tof / fmin(period1, period2));
         }
+
+        friend class boost::serialization::access;
+
+        template<class Archive>
+        void serialize(Archive &ar, const unsigned int) {
+            ar &r1;
+            ar &r2;
+            ar &tof;
+            ar &mu;
+            ar &v1;
+            ar &v2;
+            ar &multi_revs;
+            ar &lw;
+            ar &k2;
+            ar &k2_class;
+            ar &solv_exposins;
+        }
+
     public:
         friend std::ostream &operator<<(std::ostream &s, const lambert_exposin &lp) {
             s << std::setprecision(14) << "Lambert's problem (exponential sinusoid):" << std::endl;
             s << "mu = " << lp.mu << std::endl;
             s << "r1 = " << lp.r1 << std::endl;
             s << "r2 = " << lp.r2 << std::endl;
-            s << "Time of flight: " << lp.tof <<std::endl<< std::endl;
-            s << "Maximum number of revolutions: " << lp.multi_revs << std::endl;
-            s << "Solutions: " << std::endl;
-            for (int i = 0; i <= lp.multi_revs; i++){
-                s << "Rev " << i << ": v1 := " << lp.get_v1()[i] << "; v2 := " << lp.get_v2()[i] << std::endl;
+            s << "angle = " << lp.k2_class.get_angle() << std::endl;
+            s << "time of flight: " << lp.tof << std::endl;
+            s << "maximum number of revolutions: " << lp.multi_revs << std::endl;
+            s << "solutions: " << (int)lp.solv_exposins.size() << std::endl;
+            for (int i = 0; i < (int)lp.solv_exposins.size(); i++) {
+                s << "Rev := " << lp.solv_exposins[i].get_revs() << ", v1 := " << lp.get_v1()[i] << ", v2 := " <<
+                lp.get_v2()[i] << std::endl;
             }
             return s;
         }
