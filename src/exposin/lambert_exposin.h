@@ -183,15 +183,15 @@ namespace kep_toolbox {
         }
 
         friend std::ostream &operator<<(std::ostream &s, const lambert_exposin &lp) {
-            s << std::setprecision(14) << "Lambert's problem (exponential sinusoid):" << std::endl;
+            s << std::setprecision(7) << "Lambert's problem (exponential sinusoid):" << std::endl;
             s << "mu = " << lp.mu << std::endl;
             s << "r1 = " << lp.r1 << std::endl;
             s << "r2 = " << lp.r2 << std::endl;
             s << "angle = " << lp.k2_class.get_angle() << std::endl;
             s << "time of flight: " << lp.tof << std::endl;
             s << "maximum number of revolutions: " << lp.multi_revs << std::endl;
-            s << "solutions: " << (int)lp.solv_exposins.size() << std::endl;
-            for (int i = 0; i < (int)lp.solv_exposins.size(); i++) {
+            s << "solutions: " << (int) lp.solv_exposins.size() << std::endl;
+            for (int i = 0; i < (int) lp.solv_exposins.size(); i++) {
                 s << "Rev := " << lp.solv_exposins[i].get_revs() << ", v1 := " << lp.get_v1()[i] << ", v2 := " <<
                 lp.get_v2()[i] << std::endl;
             }

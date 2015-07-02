@@ -47,7 +47,8 @@ namespace kep_toolbox {
         double k2, r1_m, r2_m, psi, angle;
         int multi_revs;
     public:
-        class_exposin(const double &k2 = 0, const double &r1_m = 0, const double &r2_m = 0, const double &angle = 0, const int &multi_revs = 0) {
+        class_exposin(const double &k2 = 0, const double &r1_m = 0, const double &r2_m = 0, const double &angle = 0,
+                      const int &multi_revs = 0) {
             this->k2 = k2;
             this->r1_m = r1_m;
             this->r2_m = r2_m;
