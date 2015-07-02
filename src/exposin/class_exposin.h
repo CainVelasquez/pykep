@@ -46,9 +46,6 @@ namespace kep_toolbox {
         /// Problem geometry and k2
         double k2, r1_m, r2_m, psi, angle;
         int multi_revs;
-
-        std::vector<double> tany1range{0.0, 0.0};
-        bool valid_range;
     public:
         class_exposin(const double &k2 = 0, const double &r1_m = 0, const double &r2_m = 0, const double &angle = 0, const int &multi_revs = 0) {
             this->k2 = k2;
@@ -75,22 +72,16 @@ namespace kep_toolbox {
             multi_revs = revs;
         }
 
-        /// Calculate minimum and maximum permissible tan y1
-        std::vector<double> tany1_range() {
+        /// Calculate minimum and maximum permissible tan y1, returns true if range is valid
+        bool tany1_range(double &tany1_l, double &tany1_u) {
             double logr1r2 = log(r1_m / r2_m);
             double cosk2O = cos(k2 * psi);
             double delta = 2.0 * (1.0 - cosk2O) / pow(k2, 4.0) - logr1r2 * logr1r2;
             double tany1min = k2 / 2.0 * (-logr1r2 / tan(k2 * psi / 2) - sqrt(delta));
             double tany1max = k2 / 2.0 * (-logr1r2 / tan(k2 * psi / 2) + sqrt(delta));
-            tany1range[0] = tany1min;
-            tany1range[1] = tany1max;
-            valid_range = delta >= 0.0;
-            return tany1range;
-        }
-
-        /// Check that the range is valid
-        bool tany1_range_valid() {
-            return valid_range;
+            tany1_l = tany1min;
+            tany1_u = tany1max;
+            return delta >= 0.0;
         }
 
         /// Build an exposin instance according to a given tan y1
@@ -116,10 +107,10 @@ namespace kep_toolbox {
 
         /// Find the tan y1 that results in a given time of flight using Regula Falsi.
         double search_tany1(const double &dT, const double &mu, const double &stop_tol = 1.0e4) {
-            tany1_range();
-            double tany1_a = tany1range[0] * TANY1_HEURISTIC; // Boundaries have a few numerical issues, so avoid them
-            double tany1_b = tany1range[1] * TANY1_HEURISTIC;
-            double tany1_c;
+            double tany1_a, tany1_b, tany1_c;
+            if (!tany1_range(tany1_a, tany1_b)) return 1e20;
+            tany1_a *= TANY1_HEURISTIC; // Boundaries have a few numerical issues, so avoid them
+            tany1_b *= TANY1_HEURISTIC;
             double tof_a, tof_b, tof_c;
 
             exposin exps;
@@ -161,10 +152,10 @@ namespace kep_toolbox {
 
         /// Build an exposin instance from a given tof. Returns false at failure, true otherwise.
         bool tof_to_exposin(exposin &exps, const double &tof, const double &mu, const double &stop_tol = 1.0e4) {
-            tany1_range();
-            if (!tany1_range_valid()) return false;
+            double tany1_l, tany1_u;
+            if (!tany1_range(tany1_l, tany1_u)) return false;
             double this_tany1 = search_tany1(tof, mu, stop_tol);
-            if (this_tany1 > tany1range[1] || this_tany1 < tany1range[0]) return false;
+            if (this_tany1 > tany1_u || this_tany1 < tany1_l) return false;
             create_exposin(exps, this_tany1);
             return true;
         }
@@ -184,8 +175,6 @@ namespace kep_toolbox {
             ar &psi;
             ar &angle;
             ar &multi_revs;
-            ar &tany1range;
-            ar &valid_range;
         }
     };
 }

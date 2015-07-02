@@ -1,6 +1,0 @@
-#ifndef KEP_TOOLBOX_DT_QUADRATURE_H
-#define KEP_TOOLBOX_DT_QUADRATURE_H
-
-
-
-#endif

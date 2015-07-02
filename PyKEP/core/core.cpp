@@ -339,7 +339,11 @@ BOOST_PYTHON_MODULE(_core) {
 			//.def("",&kep_toolbox::exposin::,return_value_policy<copy_const_reference>(),"")
 			.def("get_psi",&kep_toolbox::exposin::get_psi,return_value_policy<copy_const_reference>(),"get_psi()")
 			.def("get_revs",&kep_toolbox::exposin::get_revs,return_value_policy<copy_const_reference>(),"get_revs()")
-			.def("get_state",&kep_toolbox::exposin::get_state,"get_state(theta, mu)");
+			.def("get_state",&kep_toolbox::exposin::get_state,"get_state(theta, mu)")
+			.def("get_final_mass",&kep_toolbox::exposin::get_final_mass,"get_final_mass(mu,isp,m)")
+			.def("get_maximum_thrust",&kep_toolbox::exposin::get_maximum_thrust,"get_maximum_thrust(mu,isp,m)")
+			.def(repr(self))
+			.def_pickle(python_class_pickle_suite<kep_toolbox::exposin>());
 
 	// Lambert problem OLD.
 	/*class_<kep_toolbox::lambert_problemOLD>("lambert_problemOLD","Represents a multiple revolution Lambert's problem",

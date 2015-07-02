@@ -182,7 +182,6 @@ namespace kep_toolbox {
             ar &solv_exposins;
         }
 
-    public:
         friend std::ostream &operator<<(std::ostream &s, const lambert_exposin &lp) {
             s << std::setprecision(14) << "Lambert's problem (exponential sinusoid):" << std::endl;
             s << "mu = " << lp.mu << std::endl;

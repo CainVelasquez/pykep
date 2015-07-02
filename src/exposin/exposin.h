@@ -31,6 +31,8 @@
 #include "../serialization.h"
 #include "../config.h"
 
+#define SPC_ABS 100
+
 typedef boost::array<double, 9> array9D;
 
 namespace kep_toolbox {
@@ -56,6 +58,7 @@ namespace kep_toolbox {
             set(k0, k1, k2, phi);
         }
 
+        /// Set shape parameters
         void set(const double &k0, const double &k1, const double &k2, const double &phi) {
             this->k0 = k0;
             this->k1 = k1;
@@ -98,11 +101,11 @@ namespace kep_toolbox {
         /// Calculate time of flight from theta=0 to theta=psi
         double tof(const double &psi, const double &mu, const int &abscissas = 10) const {
             double d_theta = psi / abscissas;
-            double integral = 0.0;
+            double tof_quadrature = 0.0;
             for (int i = 0; i < abscissas; i++) {
-                integral += d_theta / theta_dot(d_theta * i + d_theta / 2.0, mu);
+                tof_quadrature += d_theta / theta_dot(d_theta * i + d_theta / 2.0, mu);
             }
-            return integral;
+            return tof_quadrature;
         }
 
         /// Calculate magnitude of velocity
@@ -161,6 +164,7 @@ namespace kep_toolbox {
             }
         }
 
+        /// Get the state (r,v,a) in a 9D array
         const array9D get_state(const double &theta, const double &mu) const {
             array3D r, v, a;
             array9D out;
@@ -175,17 +179,51 @@ namespace kep_toolbox {
             return out;
         }
 
+        /// Get traversed angle
         const double &get_psi() const {
             return psi;
         }
 
+        /// Get revolutions
         const int &get_revs() const {
             return revs;
         }
 
-        const double &get_traversal_final_mass(const double &isp, const double &m) const;
+        /// Calculate final mass
+        double get_final_mass(const double &mu, const double &isp, const double &m) {
+            double d_theta = psi / SPC_ABS;
+            double mass_quadrature = m;
+            double max_thrust = 0.0;
+            for (int i = 0; i < SPC_ABS; i++) {
+                double theta = d_theta * i + d_theta / 2.0;
+                double dt = d_theta / theta_dot(theta, mu);
+                double accel = a_m(theta, mu);
+                double thrust = accel * mass_quadrature;
+                double dm = -thrust / isp / ASTRO_G0;
+                double delm = dt * dm;
+                mass_quadrature += delm;
+                max_thrust = fmax(max_thrust, thrust);
+            }
+            return mass_quadrature;
+        }
 
-        const double &get_max_thrust(const double &isp, const double &m) const;
+        /// Calculate maximum thrust required along the arc
+        double get_maximum_thrust(const double &mu, const double &isp, const double &m) {
+            double d_theta = psi / SPC_ABS;
+            double mass_quadrature = m;
+            double max_thrust = 0.0;
+            for (int i = 0; i < SPC_ABS; i++) {
+                double theta = d_theta * i + d_theta / 2.0;
+                double dt = d_theta / theta_dot(theta, mu);
+                double accel = a_m(theta, mu);
+                double thrust = accel * mass_quadrature;
+                double dm = -thrust / isp / ASTRO_G0;
+                double delm = dt * dm;
+                mass_quadrature += delm;
+                max_thrust = fmax(max_thrust, thrust);
+            }
+            return max_thrust;
+        }
 
         /*
          * Helper methods and misc.
@@ -206,6 +244,15 @@ namespace kep_toolbox {
             ar &lw;
             ar &psi;
             ar &revs;
+        }
+
+        friend std::ostream &operator<<(std::ostream &s, const exposin &exps) {
+            s << std::setprecision(14) << "Exponential sinusoid object:" << std::endl;
+            s << "k0 = " << exps.k0 << std::endl;
+            s << "k1 = " << exps.k1 << std::endl;
+            s << "k2 = " << exps.k2 << std::endl;
+            s << "phi = " << exps.phi << std::endl;
+            return s;
         }
     };
 }
