@@ -35,6 +35,9 @@
 #include "../serialization.h"
 #include "../config.h"
 
+// Tolerance for TOF search
+#define STOP_TOL 1.0e3
+
 namespace kep_toolbox {
     /// Lambert Solver for Exponential Sinusoid Trajectories
     /**
@@ -142,7 +145,7 @@ namespace kep_toolbox {
         bool build_a_solution(const int revs) {
             k2_class.set_revs(revs);
             exposin exps;
-            if (!k2_class.tof_to_exposin(exps, tof, mu)) {
+            if (!k2_class.tof_to_exposin(exps, tof, mu, STOP_TOL)) {
                 return false;
             }
             array3D a, b;

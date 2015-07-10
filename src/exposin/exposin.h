@@ -164,21 +164,6 @@ namespace kep_toolbox {
             }
         }
 
-        /// Get the state (r,v,a) in a 9D array
-        const array9D get_state(const double &theta, const double &mu) const {
-            array3D r, v, a;
-            array9D out;
-            r_vec(r, theta);
-            v_vec(v, theta, mu);
-            a_vec(a, theta, mu);
-            for (int i = 0; i < 3; i++) {
-                out[i + 0] = r[i];
-                out[i + 3] = v[i];
-                out[i + 6] = a[i];
-            }
-            return out;
-        }
-
         /// Get traversed angle
         const double &get_psi() const {
             return psi;

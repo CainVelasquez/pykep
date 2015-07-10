@@ -167,7 +167,6 @@ BOOST_PYTHON_MODULE(_core) {
 
 	//Register std converters to python lists if not already registered by some other module
 	PYKEP_REGISTER_CONVERTER(std::vector<kep_toolbox::exposin >, variable_capacity_policy)
-	PYKEP_REGISTER_CONVERTER(array9D, fixed_size_policy)
 
 	PYKEP_REGISTER_CONVERTER(std::vector<double >, variable_capacity_policy)
 	PYKEP_REGISTER_CONVERTER(kep_toolbox::array3D,fixed_size_policy)
@@ -345,15 +344,7 @@ BOOST_PYTHON_MODULE(_core) {
 			.def(repr(self))
 			.def_pickle(python_class_pickle_suite<kep_toolbox::lambert_problem>());
 	// Exposin
-	class_<kep_toolbox::exposin>("exposin","Represents an exponential sinusoid curve in 3D space",
-			init<optional<const double&, const double&, const double&, const double&>>(
-					"exposin(k0, k1, k2, phi)"
-					"- k0: shape parameter"
-					"- k1: shape parameter"
-					"- k2: shape parameter"
-					"- phi: shape parameter"
-			))
-			//.def("",&kep_toolbox::exposin::,return_value_policy<copy_const_reference>(),"")
+	class_<kep_toolbox::exposin>("exposin","Represents an exponential sinusoid curve in 3D space")
 			.def("get_psi",&kep_toolbox::exposin::get_psi,return_value_policy<copy_const_reference>(),
 				 "Returns the total angle traversed by an exponential sinusoid\n\n")
 			.def("get_revs",&kep_toolbox::exposin::get_revs,return_value_policy<copy_const_reference>(),

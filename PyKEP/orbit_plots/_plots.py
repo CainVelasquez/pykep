@@ -540,10 +540,10 @@ def plot_lambert_exposin(lp, ax=None, sol=0, color='b', legend=False):
     y = []
     z = []
     for i in range(segments+1):
-        stt = exposin.get_state(dtheta*i,lp.get_mu())
-        x.append(stt[0])
-        y.append(stt[1])
-        z.append(stt[2])
+        r, v, a = exposin.get_state(dtheta*i,lp.get_mu())
+        x.append(r[0])
+        y.append(r[1])
+        z.append(r[2])
 
     axis.plot(x,y,z,color)
 
