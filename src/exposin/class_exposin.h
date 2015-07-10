@@ -33,8 +33,8 @@
 #include "../config.h"
 
 #define REGULA_FALSI_ITERS 1000
-#define MAX_TOF_LIMIT 1000 * 365.0 * ASTRO_DAY2SEC
-#define TANY1_HEURISTIC 0.9
+#define MAX_TOF_LIMIT 100 * 365.0 * ASTRO_DAY2SEC
+#define TANY1_HEURISTIC 0.95
 
 namespace kep_toolbox {
     /// Exponential Sinusoid k2-Class
@@ -107,7 +107,7 @@ namespace kep_toolbox {
         }
 
         /// Find the tan y1 that results in a given time of flight using Regula Falsi.
-        double search_tany1(const double &dT, const double &mu, const double &stop_tol = 1.0e4) {
+        double search_tany1(const double &dT, const double &mu, const double &stop_tol = 1.0e3) {
             double tany1_a, tany1_b, tany1_c;
             if (!tany1_range(tany1_a, tany1_b)) return 1e20;
             tany1_a *= TANY1_HEURISTIC; // Boundaries have a few numerical issues, so avoid them

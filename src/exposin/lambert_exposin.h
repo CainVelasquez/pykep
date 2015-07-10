@@ -142,7 +142,7 @@ namespace kep_toolbox {
         bool build_a_solution(const int revs) {
             k2_class.set_revs(revs);
             exposin exps;
-            if (!k2_class.tof_to_exposin(exps, tof, mu, 10 * 86400.0)) {
+            if (!k2_class.tof_to_exposin(exps, tof, mu)) {
                 return false;
             }
             array3D a, b;

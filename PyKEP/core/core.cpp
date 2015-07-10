@@ -112,6 +112,15 @@ static inline tuple damon_wrapper(const kep_toolbox::array3D &v1, const kep_tool
 	return boost::python::make_tuple(kep_toolbox::array3D(a1),kep_toolbox::array3D(a2),double(tau),double(dv));
 }
 
+static inline tuple exposin_state_wrapper(const kep_toolbox::exposin &exps, const double &theta, const double &mu)
+{
+	kep_toolbox::array3D r, v, a;
+	exps.r_vec(r, theta);
+	exps.v_vec(v, theta, mu);
+	exps.a_vec(a, theta, mu);
+	return boost::python::make_tuple(r,v,a);
+}
+
 #define get_constant(arg) \
 static inline double get_##arg() \
 { \
@@ -308,23 +317,31 @@ BOOST_PYTHON_MODULE(_core) {
 	// Exposin Lambert
 	class_<kep_toolbox::lambert_exposin>("lambert_exposin","Represents Lambert's problem for exponential sinusoids",
 			init<optional<const kep_toolbox::array3D &, const kep_toolbox::array3D &, const double &, const double &, const bool &, const int&, const double&>>(
-			    "lambert_exposin(r1, r2, tof, mu, lw[, multi_revs, k2])"
-				"- r1: 3D starting position"
-				"- r2: 3D ending position"
-				"- tof: time of flight"
-				"- mu: gravitational parameter"
-				"- lw: True for retrograde motion"
-				"- multirevs: number of revolutions for a sinusoid to make (default -1 finds multiple valid exposins)"
-				"- k2: winding parameter for the exponential sinusoids considered in the solution"
+			    "lambert_exposin(r1, r2, tof, mu, lw[, multi_revs[, k2]])\n\n"
+				"- r1: 3D starting position\n"
+				"- r2: 3D ending position\n"
+				"- tof: time of flight\n"
+				"- mu: gravitational parameter\n"
+				"- lw: True for retrograde motion\n"
+				"- multirevs: number of revolutions for a sinusoid to make (default -1 finds multiple valid exposins)\n"
+				"- k2: winding parameter for the exponential sinusoids considered in the solution\n"
 			))
-			.def("get_v1",&kep_toolbox::lambert_exposin::get_v1,return_value_policy<copy_const_reference>(),"get_v1()")
-			.def("get_v2",&kep_toolbox::lambert_exposin::get_v2,return_value_policy<copy_const_reference>(),"get_v2()")
-			.def("get_r1",&kep_toolbox::lambert_exposin::get_r1,return_value_policy<copy_const_reference>(),"get_r1()")
-			.def("get_r2",&kep_toolbox::lambert_exposin::get_r2,return_value_policy<copy_const_reference>(),"get_r2()")
-			.def("get_tof",&kep_toolbox::lambert_exposin::get_tof,return_value_policy<copy_const_reference>(),"get_tof()")
-			.def("get_mu",&kep_toolbox::lambert_exposin::get_mu,return_value_policy<copy_const_reference>(),"get_mu()")
-			.def("get_revs",&kep_toolbox::lambert_exposin::get_revs,return_value_policy<copy_const_reference>(),"get_revs()")
-			.def("get_exposins",&kep_toolbox::lambert_exposin::get_exposins,return_value_policy<copy_const_reference>(),"get_exposins()")
+			.def("get_v1",&kep_toolbox::lambert_exposin::get_v1,return_value_policy<copy_const_reference>(),
+				 "Returns a sequence containing the starting velocities at r1 for each computed solution\n\n")
+			.def("get_v2",&kep_toolbox::lambert_exposin::get_v2,return_value_policy<copy_const_reference>(),
+				 "Returns a sequence containing the ending velocities at r2 for each computed solution\n\n")
+			.def("get_r1",&kep_toolbox::lambert_exposin::get_r1,return_value_policy<copy_const_reference>(),
+				 "Returns the starting r1\n\n")
+			.def("get_r2",&kep_toolbox::lambert_exposin::get_r2,return_value_policy<copy_const_reference>(),
+				 "Returns the starting r1\n\n")
+			.def("get_tof",&kep_toolbox::lambert_exposin::get_tof,return_value_policy<copy_const_reference>(),
+				 "Returns the specified time of flight\n\n")
+			.def("get_mu",&kep_toolbox::lambert_exposin::get_mu,return_value_policy<copy_const_reference>(),
+				 "Returns the specified gravitational parameter\n\n")
+			.def("get_revs",&kep_toolbox::lambert_exposin::get_revs,return_value_policy<copy_const_reference>(),
+				 "Returns the maximum revolution number (-1 if no solutions)\n\n")
+			.def("get_exposins",&kep_toolbox::lambert_exposin::get_exposins,return_value_policy<copy_const_reference>(),
+				 "Returns a sequence of exponential sinusoid objects that solve the problem\n\n")
 			.def(repr(self))
 			.def_pickle(python_class_pickle_suite<kep_toolbox::lambert_problem>());
 	// Exposin
@@ -337,11 +354,22 @@ BOOST_PYTHON_MODULE(_core) {
 					"- phi: shape parameter"
 			))
 			//.def("",&kep_toolbox::exposin::,return_value_policy<copy_const_reference>(),"")
-			.def("get_psi",&kep_toolbox::exposin::get_psi,return_value_policy<copy_const_reference>(),"get_psi()")
-			.def("get_revs",&kep_toolbox::exposin::get_revs,return_value_policy<copy_const_reference>(),"get_revs()")
-			.def("get_state",&kep_toolbox::exposin::get_state,"get_state(theta, mu)")
-			.def("get_final_mass",&kep_toolbox::exposin::get_final_mass,"get_final_mass(mu,isp,m)")
-			.def("get_maximum_thrust",&kep_toolbox::exposin::get_maximum_thrust,"get_maximum_thrust(mu,isp,m)")
+			.def("get_psi",&kep_toolbox::exposin::get_psi,return_value_policy<copy_const_reference>(),
+				 "Returns the total angle traversed by an exponential sinusoid\n\n")
+			.def("get_revs",&kep_toolbox::exposin::get_revs,return_value_policy<copy_const_reference>(),
+				 "Returns the number of revolutions that fall between the starting and ending points\n\n")
+			.def("get_state",&exposin_state_wrapper,
+				 "Returns a 9D array containing position, velocity, and acceleration at a given angle\n\n"
+			     "Example::\n\n"
+			     "    r, v, a = exposin.get_state(theta, mu)\n")
+			.def("get_final_mass",&kep_toolbox::exposin::get_final_mass,
+				 "Returns the final mass of a spacecraft after traversing the entire trajectory\n\n"
+			     "Example::\n\n"
+			     "    mf = exposin.get_final_mass(mu,isp,m)\n")
+			.def("get_maximum_thrust",&kep_toolbox::exposin::get_maximum_thrust,
+				 "Returns the maximum discovered thrust required by a spacecraft to traverse the entire trajectory\n\n"
+				 "Example::\n\n"
+				 "    tmax = exposin.get_maximum_thrust(mu,isp,m)")
 			.def(repr(self))
 			.def_pickle(python_class_pickle_suite<kep_toolbox::exposin>());
 

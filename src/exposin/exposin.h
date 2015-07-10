@@ -31,7 +31,7 @@
 #include "../serialization.h"
 #include "../config.h"
 
-#define SPC_ABS 100
+#define PROPAGATION_STEPS 100
 
 typedef boost::array<double, 9> array9D;
 
@@ -191,10 +191,10 @@ namespace kep_toolbox {
 
         /// Calculate final mass
         double get_final_mass(const double &mu, const double &isp, const double &m) {
-            double d_theta = psi / SPC_ABS;
+            double d_theta = psi / PROPAGATION_STEPS;
             double mass_quadrature = m;
             double max_thrust = 0.0;
-            for (int i = 0; i < SPC_ABS; i++) {
+            for (int i = 0; i < PROPAGATION_STEPS; i++) {
                 double theta = d_theta * i + d_theta / 2.0;
                 double dt = d_theta / theta_dot(theta, mu);
                 double accel = a_m(theta, mu);
@@ -209,10 +209,10 @@ namespace kep_toolbox {
 
         /// Calculate maximum thrust required along the arc
         double get_maximum_thrust(const double &mu, const double &isp, const double &m) {
-            double d_theta = psi / SPC_ABS;
+            double d_theta = psi / PROPAGATION_STEPS;
             double mass_quadrature = m;
             double max_thrust = 0.0;
-            for (int i = 0; i < SPC_ABS; i++) {
+            for (int i = 0; i < PROPAGATION_STEPS; i++) {
                 double theta = d_theta * i + d_theta / 2.0;
                 double dt = d_theta / theta_dot(theta, mu);
                 double accel = a_m(theta, mu);
