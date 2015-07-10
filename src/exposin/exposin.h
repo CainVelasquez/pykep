@@ -33,8 +33,6 @@
 
 #define PROPAGATION_STEPS 100
 
-typedef boost::array<double, 9> array9D;
-
 namespace kep_toolbox {
     /// Exponential Sinusoid Trajectory Model
     /**
