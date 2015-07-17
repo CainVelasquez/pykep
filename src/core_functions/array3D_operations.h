@@ -61,6 +61,12 @@ namespace kep_toolbox {
         double c = norm(in);
         for (int i = 0;i<3;++i) out[i] = in[i]/c;
     }
+    template<class vettore3D>
+    inline void scale(vettore3D& out, const vettore3D& in, const double &scalar){
+        for (int i = 0; i < 3; i++) {
+            out[i] = scalar * in[i];
+        }
+    }
 }
 
 #endif // KEP_TOOLBOX_ARRAY3D_OPERATIONS_H

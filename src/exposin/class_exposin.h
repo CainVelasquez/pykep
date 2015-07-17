@@ -31,10 +31,10 @@
 #include "../astro_constants.h"
 #include "../serialization.h"
 #include "../config.h"
+#include "boost/math/special_functions/fpclassify.hpp"
 
-#define REGULA_FALSI_ITERS 1000
-#define MAX_TOF_LIMIT 100 * 365.0 * ASTRO_DAY2SEC
-#define TANY1_HEURISTIC 0.95
+#define NR_MAX_ITERS 1000
+#define NR_EPSILON 1.0e-5
 
 namespace kep_toolbox {
     /// Exponential Sinusoid k2-Class
@@ -106,58 +106,39 @@ namespace kep_toolbox {
             expsn.set(k0, k1, k2, phi);
         }
 
-        /// Find the tan y1 that results in a given time of flight using Regula Falsi.
-        double search_tany1(const double &dT, const double &mu, const double &stop_tol = 1.0e3) {
-            double tany1_a, tany1_b, tany1_c;
-            if (!tany1_range(tany1_a, tany1_b)) return 1e20;
-            tany1_a *= TANY1_HEURISTIC; // Boundaries have a few numerical issues, so avoid them
-            tany1_b *= TANY1_HEURISTIC;
-            double tof_a, tof_b, tof_c;
-
+        /// Find the tany1 that results in a given time of flight. Returns false if none exists in valid range.
+        bool search_tany1(double &tany1, const double &dT, const double &mu, const double &stop_tol = 1.0e3) {
+            // Uses Newton-Raphson with approximated derivatives to find tany1.
             exposin exps;
-
-            // F(a)
-            create_exposin(exps, tany1_a);
-            tof_a = exps.tof(psi, mu);
-
-            // F(b)
-            create_exposin(exps, tany1_b);
-            tof_b = exps.tof(psi, mu);
-
-            // Max TOF can be problematically large, so impose a simple limit
-            tof_b = fmin(tof_b, MAX_TOF_LIMIT);
-
-            if (dT > tof_b || dT < tof_a) return 1e20; // Opportunistic prune
-
-            double iters = REGULA_FALSI_ITERS;
+            double tof_guess;
+            int iters = NR_MAX_ITERS;
+            double tany1_lb, tany1_ub;
+            if (!tany1_range(tany1_lb, tany1_ub)) return false;
+            double tany1_guess = 0.5 * (tany1_lb + tany1_ub);
             do {
-                // Find c, then F(c)
-                tany1_c = tany1_b - (tof_b - dT) * (tany1_b - tany1_a) / (tof_b - tof_a);
-                create_exposin(exps, tany1_c);
-                tof_c = exps.tof(psi, mu);
-
-                // Revise bounds
-                if ((tof_a > 0.0 && tof_c > 0.0) || (tof_a < 0.0 && tof_c < 0.0)) {
-                    tany1_a = tany1_c;
-                    tof_a = tof_c;
-                }
-                else {
-                    tany1_b = tany1_c;
-                    tof_b = tof_c;
-                }
-            }
-            while (fabs(tof_c - dT) > stop_tol && (--iters));
-            if (iters == 0) return 1e20;
-            return tany1_c;
+                // Calculate d_tof / d_tany1
+                create_exposin(exps, tany1_guess + NR_EPSILON);
+                double dy = exps.tof(psi, mu) - tof_guess;
+                double dydx = dy / NR_EPSILON;
+                // Update guess
+                tany1_guess += -(tof_guess - dT) / dydx;
+                // Break if NaNs come up
+                if (!boost::math::isfinite(tany1_guess)) return false;
+                // Get new f(guess)
+                create_exposin(exps, tany1_guess);
+                tof_guess = exps.tof(psi, mu);
+            } while (fabs(tof_guess - dT) > stop_tol && (--iters));
+            if (iters == 0) return false;
+            if (tany1_guess < tany1_lb || tany1_guess > tany1_ub) return false;
+            tany1 = tany1_guess;
+            return true;
         }
 
         /// Build an exposin instance from a given tof. Returns false at failure, true otherwise.
         bool tof_to_exposin(exposin &exps, const double &tof, const double &mu, const double &stop_tol = 1.0e4) {
-            double tany1_l, tany1_u;
-            if (!tany1_range(tany1_l, tany1_u)) return false;
-            double this_tany1 = search_tany1(tof, mu, stop_tol);
-            if (this_tany1 > tany1_u || this_tany1 < tany1_l) return false;
-            create_exposin(exps, this_tany1);
+            double candidate_tany1;
+            if (!search_tany1(candidate_tany1, tof, mu, stop_tol)) return false;
+            create_exposin(exps, candidate_tany1);
             return true;
         }
 

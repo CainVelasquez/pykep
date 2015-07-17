@@ -27,11 +27,11 @@
 #define KEP_TOOLBOX_EXPOSIN_H
 
 #include <cmath>
-#include "vectors.h"
+#include "../core_functions/array3D_operations.h"
 #include "../serialization.h"
 #include "../config.h"
 
-#define PROPAGATION_STEPS 100
+#define PROPAGATION_STEPS 20
 
 namespace kep_toolbox {
     /// Exponential Sinusoid Trajectory Model
@@ -51,7 +51,7 @@ namespace kep_toolbox {
         bool lw;
         int revs;
     public:
-
+        /// Constructor
         exposin(const double &k0 = 0, const double &k1 = 0, const double &k2 = 0, const double &phi = 0) {
             set(k0, k1, k2, phi);
         }
@@ -65,13 +65,24 @@ namespace kep_toolbox {
         }
 
         /// Extra data for 3D projection
-        void projection(const array3D &r1, const array3D &r2, const double &angle, const bool &lw, const double &psi,
-                        const int &revs) {
+        /** Adds extra data for 3D interpretation
+         * \param[in] r1 first cartesian position
+         * \param[in] r2 second cartesian position
+         * \param[in] lw should long way between r1, r2 be taken in solutions
+         * \param[in] revs revolutions between r1, r2
+         */
+        void projection(const array3D &r1, const array3D &r2, const bool &lw, const int &revs) {
             this->r1 = r1;
             this->r2 = r2;
             this->angle = angle;
+            double r1_m = norm(r1);
+            double r2_m = norm(r2);
+            this->angle = acos(dot(r1, r2) / r1_m / r2_m);
+            if (lw) {
+                this->angle = 2.0 * M_PI - this->angle;
+            }
             this->lw = lw;
-            this->psi = psi;
+            this->psi = this->angle + revs * 2 * M_PI;
             this->revs = revs;
         }
 
@@ -98,6 +109,7 @@ namespace kep_toolbox {
 
         /// Calculate time of flight from theta=0 to theta=psi
         double tof(const double &psi, const double &mu, const int &abscissas = 10) const {
+            // abscissas = 10 results in <1% error
             double d_theta = psi / abscissas;
             double tof_quadrature = 0.0;
             for (int i = 0; i < abscissas; i++) {
@@ -213,6 +225,24 @@ namespace kep_toolbox {
          */
 
     private:
+
+        /// Project 2D cartesian coordinates into 3D space given x and z 3D axes and x', y'
+        void rel_coord(array3D &out, const array3D &z_axis, const array3D &x_axis, const double &x_prime, const double &y_prime) const {
+            // Unit radial and tangential components
+            array3D ur;
+            array3D ut;
+
+            // Construct unit components
+            vers(ur, x_axis);
+            cross(ut, z_axis, x_axis);
+            vers(ut, ut);
+
+            // Construct final vector, r = x' * <X> + y' * <Y>
+            scale(ur, ur, x_prime);
+            scale(ut, ut, y_prime);
+            sum(out, ur, ut);
+        };
+
         friend class boost::serialization::access;
 
         template<class Archive>
