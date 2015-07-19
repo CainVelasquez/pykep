@@ -243,4 +243,4 @@ namespace kep_toolbox {
         s << std::endl;
         return s;
     }
-}
+} // namespace

@@ -29,7 +29,6 @@
 #include <cmath>
 #include "class_exposin.h"
 #include "exposin.h"
-#include <fstream>
 #include <vector>
 
 #include "../astro_constants.h"

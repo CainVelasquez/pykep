@@ -155,4 +155,4 @@ namespace kep_toolbox {
         s << "revs: " << ce.m_revs << std::endl;
         return s;
     }
-};
+} // namespace
