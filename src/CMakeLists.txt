@@ -24,6 +24,10 @@ SET(PYKEP_LIB_SRC_LIST
 	${CMAKE_CURRENT_SOURCE_DIR}/third_party/libsgp4/OrbitalElements.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/third_party/libsgp4/Observer.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/third_party/libsgp4/Eci.cpp
+
+	${CMAKE_CURRENT_SOURCE_DIR}/exposin/lambert_exposin.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/exposin/class_exposin.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/exposin/exposin.cpp
 )
 
 IF(BUILD_SPICE)

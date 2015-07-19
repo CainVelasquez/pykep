@@ -519,7 +519,7 @@ def plot_lambert_exposin(lp, ax=None, sol=0, color='b', legend=False):
 
     plt.show()
     """
-    if lp.get_revs() == -1:
+    if lp.num_solutions() == 0:
         return # no solutions
     import matplotlib as mpl
     from mpl_toolkits.mplot3d import Axes3D

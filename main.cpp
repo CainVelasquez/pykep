@@ -35,9 +35,11 @@ int main() {
     double mu = 1.32e20;
     double tof = 86400 * 550.0;
     bool lw = true;
-    int multi_revs = -1;
+    int multi_revs = 0;
     double k2 = 0.2;
     auto prob = lambert_exposin(r1, r2, tof, mu, lw, multi_revs, k2);
-    cout << prob;
+    cout << prob << endl;
+    auto prob2 = lambert_exposin(r1, r2, tof, mu, lw, multi_revs, k2);
+    cout << prob2 << endl;
     return 0;
 }

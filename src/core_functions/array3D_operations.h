@@ -67,6 +67,16 @@ namespace kep_toolbox {
             out[i] = scalar * in[i];
         }
     }
+    template<class vettore3D>
+    inline double angle(const vettore3D& u, const vettore3D& v, const bool longway = false){
+        double U = norm(u);
+        double V = norm(v);
+        double angle = acos(dot(u, v) / U / V);
+        if (longway) {
+            angle = 2.0 * M_PI - angle;
+        }
+        return angle;
+    }
 }
 
 #endif // KEP_TOOLBOX_ARRAY3D_OPERATIONS_H
