@@ -107,8 +107,8 @@ namespace kep_toolbox {
         double s = sin(m_k2 * theta + m_phi);
         double cosy = 1.0 / sqrt(1.0 + tan_y * tan_y);
         double tan2yk1k22s1 = tan_y * tan_y + m_k1 * m_k2 * m_k2 * s + 1.0;
-        return fabs(tan_y) / 2.0 / cosy *
-               (1 / tan2yk1k22s1 - (m_k2 * m_k2 * (1 - 2 * m_k1 * s)) / tan2yk1k22s1 * tan2yk1k22s1);
+        return fabs(tan_y / 2.0 / cosy *
+               (1 / tan2yk1k22s1 - (m_k2 * m_k2 * (1 - 2 * m_k1 * s)) / tan2yk1k22s1 * tan2yk1k22s1));
     }
 
     /// Calculate dimensional acceleration magnitude
