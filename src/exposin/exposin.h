@@ -47,6 +47,7 @@ namespace kep_toolbox {
         void set(const double &k0, const double &k1, const double &k2, const double &phi);
         void projection(const array3D &r1, const array3D &r2, const bool &lw, const int &revs);
         double tof(const double &psi, const double &mu, const int &abscissas = DEFAULT_ABSCISSAS) const;
+        double theta(const double &tof, const double &mu, const int &abscissas = DEFAULT_ABSCISSAS) const;
         void r_vec(array3D &out, const double &theta) const;
         void v_vec(array3D &out, const double &theta, const double &mu) const;
         void a_vec(array3D &out, const double &theta, const double &mu) const;

@@ -85,6 +85,7 @@ namespace kep_toolbox {
 
     /// Calculate time of flight from theta=0 to theta=psi
     double exposin::tof(const double &psi, const double &mu, const int &abscissas) const {
+        // Simple midpoint rule to evaluate quadrature
         // abscissas = 10 results in <1% error
         double d_theta = psi / abscissas;
         double tof_quadrature = 0.0;
@@ -92,6 +93,17 @@ namespace kep_toolbox {
             tof_quadrature += d_theta / theta_dot(d_theta * i + d_theta / 2.0, mu);
         }
         return tof_quadrature;
+    }
+
+    /// Calculate the total traversed angle from theta = 0 for the given tof
+    double exposin::theta(const double &tof, const double &mu, const int &abscissas) const {
+        // Simple midpoint rule to evaluate quadrature
+        double dt = tof / abscissas;
+        double theta = 0.0;
+        for (int i = 0; i < abscissas; i++){
+            theta += dt * theta_dot(theta, mu);
+        }
+        return theta;
     }
 
     /// Calculate magnitude of velocity

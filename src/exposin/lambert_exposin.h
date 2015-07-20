@@ -34,8 +34,8 @@
 #include "../serialization.h"
 #include "../config.h"
 
-// Tolerance for TOF search
-#define STOP_TOL 1.0e3
+// Fraction of supplied TOF to use as tolerance in rootfinder
+#define TOF_FRACTION 0.01
 
 namespace kep_toolbox {
     /// Lambert Solver for Exponential Sinusoid Trajectories

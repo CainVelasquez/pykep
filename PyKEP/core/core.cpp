@@ -321,6 +321,10 @@ BOOST_PYTHON_MODULE(_core) {
 				 "Returns the time of flight from angle 0 at r1 to given psi\n\n"
 			             "Example::\n\n"
 			             "    tof = exposin.get_tof(psi,mu)")
+			.def("get_theta",&kep_toolbox::exposin::theta,
+				 "Returns theta at a certain time of flight\n\n"
+						 "Example::\n\n"
+						 "    theta = exposin.get_tof(tof,mu)")
 			.def("get_state",&exposin_state_wrapper,
 				 "Get the state r,v,a at some angle\n\n"
 			             "Example::\n\n"

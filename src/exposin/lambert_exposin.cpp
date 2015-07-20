@@ -159,8 +159,8 @@ namespace kep_toolbox {
         k2_class.set_revs(revs);
         // Try to build a valid exposin
         m_solv_exposins.resize((unsigned long)m_num_solutions + 1); // allocate one to test
-        if (!k2_class.tof_to_exposin(m_solv_exposins[m_num_solutions], m_tof, m_mu, STOP_TOL)) {
-            m_solv_exposins.resize((unsigned long)m_num_solutions); // deallocate
+        if (!k2_class.tof_to_exposin(m_solv_exposins[m_num_solutions], m_tof, m_mu, m_tof * TOF_FRACTION)) {
+            m_solv_exposins.resize((unsigned long)m_num_solutions); // deallocate at failure
             return false;
         }
         // Exposin is valid solution...
