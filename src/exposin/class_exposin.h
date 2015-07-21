@@ -32,7 +32,7 @@
 #include "../serialization.h"
 #include "../config.h"
 
-#define NR_MAX_ITERS 1000
+#define NR_MAX_ITERS 20
 #define NR_EPSILON 1.0e-5
 #define DEFAULT_STOP_TOL 1.0e-3
 
@@ -56,8 +56,8 @@ namespace kep_toolbox {
         void set_revs(const int &revs);
         bool tany1_range(double &tany1_lb, double &tany1_ub);
         void create_exposin(exposin &expsn, const double &tany1) const;
-        bool search_tany1(double &tany1, const double &dT, const double &mu, const double &stop_tol = DEFAULT_STOP_TOL);
-        bool tof_to_exposin(exposin &exps, const double &tof, const double &mu, const double &stop_tol = DEFAULT_STOP_TOL);
+        bool search_tany1(double &tany1, const double &dT, const double &mu, int &iters, const double &stop_tol = DEFAULT_STOP_TOL);
+        bool tof_to_exposin(exposin &exps, const double &tof, const double &mu, int &iters, const double &stop_tol = DEFAULT_STOP_TOL);
     private:
         friend class boost::serialization::access;
         template<class Archive>

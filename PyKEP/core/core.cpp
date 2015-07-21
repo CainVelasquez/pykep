@@ -367,6 +367,8 @@ BOOST_PYTHON_MODULE(_core) {
 				 "Returns a sequence containing the starting velocities at r1 for each computed solution\n\n")
 			.def("get_v2",&kep_toolbox::lambert_exposin::get_v2,return_value_policy<copy_const_reference>(),
 				 "Returns a sequence containing the ending velocities at r2 for each computed solution\n\n")
+			.def("get_iters",&kep_toolbox::lambert_exposin::get_iters,return_value_policy<copy_const_reference>(),
+				 "Returns a sequence containing the iterations needed for each computed solution\n\n")
 			.def("get_r1",&kep_toolbox::lambert_exposin::get_r1, return_value_policy<copy_const_reference>(),
 				 "Returns the initial position\n\n")
 			.def("get_r2",&kep_toolbox::lambert_exposin::get_r2, return_value_policy<copy_const_reference>(),

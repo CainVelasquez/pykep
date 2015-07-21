@@ -99,6 +99,11 @@ namespace kep_toolbox {
         return m_v2;
     }
 
+    /// Get iterations needed to find each solving exposin
+    const std::vector<int> &lambert_exposin::get_iters() const {
+        return m_iters;
+    }
+
     /// Get starting position
     const array3D &lambert_exposin::get_r1() const {
         return m_r1;
@@ -158,14 +163,16 @@ namespace kep_toolbox {
     bool lambert_exposin::build_a_solution(class_exposin &k2_class, const int revs) {
         k2_class.set_revs(revs);
         // Try to build a valid exposin
+        int iters;
         m_solv_exposins.resize((unsigned long)m_num_solutions + 1); // allocate one to test
-        if (!k2_class.tof_to_exposin(m_solv_exposins[m_num_solutions], m_tof, m_mu, m_tof * TOF_FRACTION)) {
+        if (!k2_class.tof_to_exposin(m_solv_exposins[m_num_solutions], m_tof, m_mu, iters, m_tof * TOF_FRACTION)) {
             m_solv_exposins.resize((unsigned long)m_num_solutions); // deallocate at failure
             return false;
         }
         // Exposin is valid solution...
         m_v1.resize((unsigned long)m_num_solutions + 1);
         m_v2.resize((unsigned long)m_num_solutions + 1);
+        m_iters.resize((unsigned long)m_num_solutions + 1);
 
         // Add 3D interpretation data to exposin
         m_solv_exposins[m_num_solutions].projection(m_r1, m_r2, m_lw, revs);
@@ -175,6 +182,7 @@ namespace kep_toolbox {
         m_solv_exposins[m_num_solutions].v_vec(m_v1[m_num_solutions], 0.0, m_mu);
         m_solv_exposins[m_num_solutions].v_vec(m_v2[m_num_solutions], psi, m_mu);
 
+        m_iters[m_num_solutions] = iters;
         m_num_solutions++;
         return true;
     }
@@ -213,6 +221,7 @@ namespace kep_toolbox {
                 s << "Rev: " << lp.m_solv_exposins[i].get_revs() << ", v1: " << lp.get_v1()[i] << ", v2: " <<
                 lp.get_v2()[i] << std::endl;
                 s << "Exposin: " << lp.m_solv_exposins[i] << std::endl;
+                s << "Iters: " << lp.m_iters[i] << std::endl;
             }
         }
         return s;

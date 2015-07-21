@@ -59,6 +59,7 @@ namespace kep_toolbox {
                         const int &revs = -1, const double &k2 = 0.1);
         const std::vector<array3D> &get_v1() const;
         const std::vector<array3D> &get_v2() const;
+        const std::vector<int> &get_iters() const;
         const array3D &get_r1() const;
         const array3D &get_r2() const;
         const double &get_tof() const;
@@ -84,6 +85,7 @@ namespace kep_toolbox {
             ar & const_cast<double&> (m_k2);
             ar & const_cast<bool&> (m_lw);
             ar & const_cast<double&> (m_transfer_angle);
+            ar & m_iters;
             ar & m_min_revs;
             ar & m_max_revs;
             ar & m_has_solutions;
@@ -91,6 +93,7 @@ namespace kep_toolbox {
         }
         std::vector<exposin> m_solv_exposins;
         std::vector<array3D> m_v1, m_v2;
+        std::vector<int> m_iters;
         const array3D m_r1, m_r2;
         int m_min_revs, m_max_revs;
         bool m_has_solutions;

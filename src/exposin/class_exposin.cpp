@@ -102,7 +102,7 @@ namespace kep_toolbox {
     }
 
     /// Find the tany1 that results in a given time of flight. Returns false if none exists in valid range.
-    bool class_exposin::search_tany1(double &tany1, const double &dT, const double &mu, const double &stop_tol) {
+    bool class_exposin::search_tany1(double &tany1, const double &dT, const double &mu, int &iters, const double &stop_tol) {
         // Uses Newton-Raphson with approximated derivatives to find tany1.
         exposin exps;
 
@@ -115,7 +115,7 @@ namespace kep_toolbox {
         create_exposin(exps, tany1_guess);
         double tof_guess = exps.tof(m_psi, mu);
 
-        int iters = NR_MAX_ITERS;
+        iters = 0;
         do {
             // Calculate d_tof / d_tany1
             create_exposin(exps, tany1_guess + NR_EPSILON);
@@ -128,18 +128,18 @@ namespace kep_toolbox {
             // Get new f(x)
             create_exposin(exps, tany1_guess);
             tof_guess = exps.tof(m_psi, mu);
-        } while (fabs(tof_guess - dT) > stop_tol && (--iters));
+        } while (++iters < NR_MAX_ITERS && fabs(tof_guess - dT) > stop_tol);
 
-        if (iters == 0) return false;
+        if (iters == NR_MAX_ITERS) return false;
         if (tany1_guess < tany1_lb || tany1_guess > tany1_ub) return false;
         tany1 = tany1_guess;
         return true; // success!
     }
 
     /// Build an exposin instance from a given tof. Returns false at failure, true otherwise.
-    bool class_exposin::tof_to_exposin(exposin &exps, const double &tof, const double &mu, const double &stop_tol) {
+    bool class_exposin::tof_to_exposin(exposin &exps, const double &tof, const double &mu, int &iters, const double &stop_tol) {
         double candidate_tany1;
-        if (!search_tany1(candidate_tany1, tof, mu, stop_tol)) return false;
+        if (!search_tany1(candidate_tany1, tof, mu, iters, stop_tol)) return false;
         create_exposin(exps, candidate_tany1);
         return true;
     }
